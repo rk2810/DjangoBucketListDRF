@@ -48,7 +48,6 @@ class SignIn(APIView):
 
 class GetNotes(APIView):
     @staticmethod
-    def post(request):
-        auth = get_authorization_header(request).split()[1]
-        user_id = jwt_decode_handler(auth).get('sub')
-        return Response([], HTTP_200_OK)
+    def get(request):
+        user_id = request.requested_by
+        return Response([user_id], HTTP_200_OK)

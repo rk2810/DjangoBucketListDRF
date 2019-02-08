@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('signup/', bucket.SignUp.as_view()),
     path('signin/', bucket.SignIn.as_view()),
+    path('notes', bucket.GetNotes.as_view()),
 ]

@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'bucketDRF.middleware.TokenHandler.ApiTokenCheckMiddleware'
 ]
 
 ROOT_URLCONF = 'bucket_list.urls'

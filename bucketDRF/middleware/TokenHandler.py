@@ -5,6 +5,7 @@ from rest_framework_jwt.authentication import api_settings
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 from rest_framework_jwt.authentication import api_settings
 from django.http import HttpResponse
+from django.utils.deprecation import MiddlewareMixin
 
 # General Imports
 import time
@@ -33,7 +34,7 @@ def jwt_payload_handler(user):
     }
 
 
-class ApiTokenCheckMiddleware(object):
+class ApiTokenCheckMiddleware(MiddlewareMixin):
     @staticmethod
     def process_request(request):
         res = {'message': 'Api Key Invalid.'}
@@ -69,3 +70,4 @@ class ApiTokenCheckMiddleware(object):
                                     status=HTTP_401_UNAUTHORIZED)
 
         return None
+
