@@ -41,7 +41,10 @@ class SignIn(APIView):
             if check_password(password, user_obj.password):
                 payload = jwt_payload_handler(user_obj)
                 token = jwt_encode_handler(payload)
-                return Response({'result': {'user_details': {'id': user_obj.id, 'name': user_obj.name}, 'token': token}})
+                return Response({'message': 'Signed in successfully.',
+                                 'user_details': {'id': user_obj.id,
+                                                  'name': user_obj.name},
+                                 'token': token})
         else:
             return Response({'User does not exist.'}, HTTP_400_BAD_REQUEST)
 
