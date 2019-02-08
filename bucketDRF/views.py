@@ -3,14 +3,14 @@ import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
-from rest_framework_jwt.utils import jwt_encode_handler
+from rest_framework_jwt.utils import jwt_encode_handler, jwt_decode_handler
 from rest_framework.status import (HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_REQUEST)
-from django.contrib.auth.hashers import BCryptSHA256PasswordHasher, check_password, make_password
+from django.contrib.auth.hashers import check_password, make_password
 
 from bucketDRF.middleware.TokenHandler import jwt_payload_handler
 
 # Models
-from bucketDRF.models import Users, Notes
+from bucketDRF.models import User, Note
 
 
 class SignUp(APIView):
@@ -20,14 +20,14 @@ class SignUp(APIView):
         name = request.POST.get('name')
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
-        user_check = Users.objects.filter(username=username)
+        user_check = User.objects.filter(username=username)
         if user_check:
             return Response({'message': 'Please choose another username.'}, HTTP_400_BAD_REQUEST)
         if password != confirm_password:
             return Response({'message': 'Passwords do not match.'}, HTTP_400_BAD_REQUEST)
         password_hash = make_password(password)
         now = datetime.datetime.now()
-        Users.objects.create(username=username, password=password_hash, name=name, created_at=now, updated_at=now)
+        User.objects.create(username=username, password=password_hash, name=name, created_at=now, updated_at=now)
         return Response({'result': 'Signed up successfully.'}, HTTP_201_CREATED)
 
 
@@ -36,7 +36,7 @@ class SignIn(APIView):
     def post(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user_obj = Users.objects.filter(username=username, flag=1).first()
+        user_obj = User.objects.filter(username=username, flag=1).first()
         if user_obj:
             if check_password(password, user_obj.password):
                 payload = jwt_payload_handler(user_obj)
@@ -44,3 +44,11 @@ class SignIn(APIView):
                 return Response({'result': {'user_details': {'id': user_obj.id, 'name': user_obj.name}, 'token': token}})
         else:
             return Response({'User does not exist.'}, HTTP_400_BAD_REQUEST)
+
+
+class GetNotes(APIView):
+    @staticmethod
+    def post(request):
+        auth = get_authorization_header(request).split()[1]
+        user_id = jwt_decode_handler(auth).get('sub')
+        return Response([], HTTP_200_OK)
