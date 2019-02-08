@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from bucketDRF import views as bucket
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('signup/', bucket.SignUp.as_view()),
+    path('signin/', bucket.SignIn.as_view()),
 ]
