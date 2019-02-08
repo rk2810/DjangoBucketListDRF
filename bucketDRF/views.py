@@ -2,8 +2,7 @@ import datetime
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authentication import get_authorization_header
-from rest_framework_jwt.utils import jwt_encode_handler, jwt_decode_handler
+from rest_framework_jwt.utils import jwt_encode_handler
 from rest_framework.status import (HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_REQUEST)
 from django.contrib.auth.hashers import check_password, make_password
 
@@ -53,4 +52,58 @@ class GetNotes(APIView):
     @staticmethod
     def get(request):
         user_id = request.requested_by
-        return Response([user_id], HTTP_200_OK)
+        notes_data = Note.objects.filter(user_id=user_id, archived=False, flag=True).values('id', 'title', 'details',
+                                                                                            'created_at', 'updated_at')
+        if not notes_data:
+            return Response({'message': 'No notes found.'}, HTTP_200_OK)
+        return Response({'result': notes_data}, HTTP_200_OK)
+
+
+class CreateNote(APIView):
+    @staticmethod
+    def post(request):
+        user_id = request.requested_by
+        details = request.POST.get('details', None)
+        title = request.POST.get('title', None)
+        now = datetime.datetime.now()
+        Note.objects.create(user_id=user_id, title=title, details=details, created_at=now, updated_at=now, flag=True)
+        return Response({'result': 'Note created!'}, HTTP_201_CREATED)
+
+
+class EditNote(APIView):
+    @staticmethod
+    def post(request):
+        user_id = request.requested_by
+        note_id = request.POST.get('note_id', None)
+        mode = request.POST.get('mode', None)
+        details = request.POST.get('details', None)
+        title = request.POST.get('title', None)
+        now = datetime.datetime.now()
+        if not note_id:
+            return Response({'message': 'No note_id'}, HTTP_400_BAD_REQUEST)
+        if mode == 'edit':
+            note_obj = Note.objects.filter(id=note_id, user_id=user_id).first()
+            if note_obj:
+                note_obj.update(details=details, title=title, updated_at=now)
+                return Response({'result': 'Note edited'}, HTTP_200_OK)
+            else:
+                return Response({'message': 'Note not found'}, HTTP_400_BAD_REQUEST)
+        elif mode == 'delete':
+            note_obj = Note.objects.filter(id=note_id, user_id=user_id).first()
+            if note_obj:
+                note_obj.delete()
+                return Response({'result': 'Note edited'}, HTTP_200_OK)
+            else:
+                return Response({'message': 'Note not found'}, HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'Please provide a mode, edit or delete'}, HTTP_400_BAD_REQUEST)
+
+
+class ArchiveNote(APIView):
+    @staticmethod
+    def get(request):
+        user_id = request.requested_by
+        note_id = request.GET.get('note_id')
+        note_obj = Note.objects.filter(id=note_id, user_id=user_id).first()
+        note_obj.update(archived=True)
+        return Response({'result': 'Note archived!'}, HTTP_200_OK)
