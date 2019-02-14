@@ -13,13 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path
 from bucketDRF import views as bucket
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('signup/', bucket.SignUp.as_view()),
     path('signin/', bucket.SignIn.as_view()),
     path('notes', bucket.GetNotes.as_view()),
+    path('create/', bucket.CreateNote.as_view()),
+    path('edit/', bucket.EditNote.as_view()),
+    path('archive', bucket.ArchiveNote.as_view()),
 ]
