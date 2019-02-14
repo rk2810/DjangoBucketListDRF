@@ -17,10 +17,10 @@ from django.urls import path
 from bucketDRF import views as bucket
 
 urlpatterns = [
-    path('signup/', bucket.SignUp.as_view()),
-    path('signin/', bucket.SignIn.as_view()),
-    path('notes', bucket.GetNotes.as_view()),
-    path('create/', bucket.CreateNote.as_view()),
-    path('edit/', bucket.EditNote.as_view()),
-    path('archive', bucket.ArchiveNote.as_view()),
+    path('auth/signup/', bucket.SignUp.as_view()),
+    path('auth/signin/', bucket.SignIn.as_view()),
+    path('notes/view', bucket.GetNotes.as_view()),
+    path('notes/create/', bucket.CreateNote.as_view()),
+    path('notes/edit/', bucket.EditNote.as_view()),
+    path('notes/archive', bucket.ArchiveNote.as_view()),
 ]

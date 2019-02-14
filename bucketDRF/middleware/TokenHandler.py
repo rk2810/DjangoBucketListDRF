@@ -47,7 +47,7 @@ class ApiTokenCheckMiddleware(MiddlewareMixin):
         except:
             return HttpResponse(json.dumps(res), status=HTTP_400_BAD_REQUEST)
 
-        if not request.path.startswith('/signup/'):
+        if not request.path.startswith('/auth/'):
             try:
                 auth = request.META['HTTP_AUTHORIZATION'].split()[1]
                 try:
