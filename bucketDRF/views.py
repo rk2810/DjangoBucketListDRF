@@ -145,7 +145,7 @@ class CreateNote(APIView):
         details (note data/text)
         title(note title)
 
-        url pattern -> notes/view
+        url pattern -> notes/create/
 
         return:
         <Created 201>:
@@ -180,23 +180,25 @@ class EditNote(APIView):
                 -> DO USE CONFIRMATION ON FRONTEND BEFORE EXECUTING THIS, This operation
                 cannot be reverted.
 
-            return:
-             <OK 200>:
-             1. {'result': 'Note edited'}
-             When note is edited successfully.
+         url pattern -> notes/edit/
 
-             2. {'result': 'Note deleted.'}
-             When note is deleted successfully.
+        return:
+         <OK 200>:
+         1. {'result': 'Note edited'}
+         When note is edited successfully.
 
-            <Bad request 400>:
-            1. {'message': 'No note_id'}
-            When note_id is not provided.
+         2. {'result': 'Note deleted.'}
+         When note is deleted successfully.
 
-            2. {'message': 'Note not found'}
-            When provided note_id does not exist.
+        <Bad request 400>:
+        1. {'message': 'No note_id'}
+        When note_id is not provided.
 
-            3. {'message': 'Please provide a mode, edit or delete'}
-            When the operation mode is not specified
+        2. {'message': 'Note not found'}
+        When provided note_id does not exist.
+
+        3. {'message': 'Please provide a mode, edit or delete'}
+        When the operation mode is not specified
         """
 
         user_id = request.requested_by
@@ -207,15 +209,18 @@ class EditNote(APIView):
         now = datetime.datetime.now()
         if not note_id:
             return Response({'message': 'No note_id'}, HTTP_400_BAD_REQUEST)
+        note_obj = Note.objects.get(id=note_id, user_id=user_id)
         if mode == 'edit':
-            note_obj = Note.objects.filter(id=note_id, user_id=user_id).first()
             if note_obj:
-                note_obj.update(details=details, title=title, updated_at=now)
+                note_obj.details = details
+                note_obj.title = title
+                note_obj.updated_at = now
+                note_obj.save()
+
                 return Response({'result': 'Note edited'}, HTTP_200_OK)
             else:
                 return Response({'message': 'Note not found'}, HTTP_400_BAD_REQUEST)
         elif mode == 'delete':
-            note_obj = Note.objects.filter(id=note_id, user_id=user_id).first()
             if note_obj:
                 note_obj.delete()
                 return Response({'result': 'Note deleted.'}, HTTP_200_OK)
