@@ -254,5 +254,43 @@ class ArchiveNote(APIView):
         note_obj = Note.objects.filter(id=note_id, user_id=user_id).first()
         if not note_obj:
             return  Response({'message': 'Note not found.'}, HTTP_400_BAD_REQUEST)
-        note_obj.update(archived=True)
+        note_obj.archived = True
+        note_obj.save()
         return Response({'result': 'Note archived!'}, HTTP_200_OK)
+
+
+class ViewArchivedNotes(APIView):
+    @staticmethod
+    def get(request):
+        """
+                ViewArchivedNotes extract <user_id> from the token.
+                Method: GET
+                user_id from JWT thru middleware
+
+                url pattern -> notes/getarchived
+
+                return:
+                <OK 200>
+                1. {'message': 'No notes found.'}
+                When no notes are found for the particular user.
+
+                2. {
+                'result': [
+                    {
+                    'id': <note_id>,
+                    'title': <note_title>,
+                    'details': <note_data/details>,
+                    'created_at': <note_created_at>,
+                    'updated_at': <note_updated_at>
+                    },
+                    {. . .}
+                ]
+                }
+                All notes associated to the user.
+                """
+        user_id = request.requested_by
+        notes_data = Note.objects.filter(user_id=user_id, archived=True, flag=True).values('id', 'title', 'details',
+                                                                                           'created_at', 'updated_at')
+        if not notes_data:
+            return Response({'message': 'No notes found.'}, HTTP_200_OK)
+        return Response({'result': notes_data}, HTTP_200_OK)

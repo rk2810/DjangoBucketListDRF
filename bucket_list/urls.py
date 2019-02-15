@@ -23,4 +23,5 @@ urlpatterns = [
     path('notes/create/', bucket.CreateNote.as_view()),
     path('notes/edit/', bucket.EditNote.as_view()),
     path('notes/archive', bucket.ArchiveNote.as_view()),
+    path('notes/getarchived', bucket.ViewArchivedNotes.as_view()),
 ]
