@@ -157,7 +157,7 @@ JWT_AUTH = {
     'JWT_LEEWAY': 0,
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=365),
     'JWT_AUDIENCE': None,
-    'JWT_ISSUER': 'https://lms-api.iaugmentor.com/',
+    'JWT_ISSUER': os.environ.get('JWT_ISSUER'),
     'JWT_ALLOW_REFRESH': False,
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=5),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
