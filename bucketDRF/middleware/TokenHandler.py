@@ -53,22 +53,10 @@ class ApiTokenCheckMiddleware(MiddlewareMixin):
                 auth = request.META['HTTP_AUTHORIZATION'].split()[1]
                 try:
                     payload = jwt_decode_handler(auth)
-                    request.requested_by = payload.get('sub')
-                except jwt.ExpiredSignature:
-                    request.requested_by = None
-                    return HttpResponse(json.dumps({'message': 'Signature has expired.'}),
-                                        status=HTTP_401_UNAUTHORIZED)
-                except jwt.DecodeError:
-                    request.requested_by = None
-                    return HttpResponse(json.dumps({'message': 'Error decoding signature.'}),
-                                        status=HTTP_400_BAD_REQUEST)
-                except jwt.InvalidTokenError:
-                    request.requested_by = None
-                    return HttpResponse(json.dumps({'message': 'Incorrect authentication token.'}),
-                                        status=HTTP_401_UNAUTHORIZED)
+                    request.requested_by = payload.get('sub', None)
+                except (jwt.InvalidTokenError, jwt.DecodeError, jwt.ExpiredSignature):
+                    pass
             except Exception as e:
                 print(e)
-                return HttpResponse(json.dumps({'error': 'No Authorization token provided'}),
-                                    status=HTTP_401_UNAUTHORIZED)
-
+                pass
         return None

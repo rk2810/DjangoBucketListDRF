@@ -128,6 +128,7 @@ class GetNotes(APIView):
         }
         All notes associated to the user.
         """
+        print(request.user.id)
         user_id = request.requested_by
         note_id = request.GET.get('note_id', None)
         if not note_id:
