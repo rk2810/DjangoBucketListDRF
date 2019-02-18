@@ -72,4 +72,3 @@ class ApiTokenCheckMiddleware(MiddlewareMixin):
                                     status=HTTP_401_UNAUTHORIZED)
 
         return None
-

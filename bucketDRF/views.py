@@ -105,6 +105,7 @@ class GetNotes(APIView):
         GetNotes extract <user_id> from the token.
         Method: GET
         user_id from JWT thru middleware
+        note_id (optional, to load a particular note)
 
         url pattern -> notes/view
 
@@ -128,8 +129,13 @@ class GetNotes(APIView):
         All notes associated to the user.
         """
         user_id = request.requested_by
-        notes_data = Note.objects.filter(user_id=user_id, archived=False, flag=True).values('id', 'title', 'details',
-                                                                                            'created_at', 'updated_at')
+        note_id = request.GET.get('note_id', None)
+        if not note_id:
+            dynamic_filter = {'user_id': user_id, 'archived': False, 'flag': True}
+        else:
+            dynamic_filter = {'user_id': user_id, 'archived': False, 'flag': True, 'note_id': note_id}
+
+        notes_data = Note.objects.filter(**dynamic_filter).values('id', 'title', 'details', 'created_at', 'updated_at')
         if not notes_data:
             return Response({'message': 'No notes found.'}, HTTP_200_OK)
         return Response({'result': notes_data}, HTTP_200_OK)
