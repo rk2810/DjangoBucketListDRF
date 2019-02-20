@@ -137,6 +137,8 @@ class GetNotes(APIView):
             dynamic_filter = {'user_id': user_id, 'archived': False, 'flag': True, 'id': note_id}
 
         notes_data = Note.objects.filter(**dynamic_filter).values('id', 'title', 'details', 'created_at', 'updated_at')
+        if note_id:
+            notes_data = notes_data.first()
         if not notes_data:
             return Response({'message': 'No notes found.'}, HTTP_200_OK)
         return Response({'result': notes_data}, HTTP_200_OK)
