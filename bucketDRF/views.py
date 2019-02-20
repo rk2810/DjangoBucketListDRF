@@ -134,7 +134,7 @@ class GetNotes(APIView):
         if not note_id:
             dynamic_filter = {'user_id': user_id, 'archived': False, 'flag': True}
         else:
-            dynamic_filter = {'user_id': user_id, 'archived': False, 'flag': True, 'note_id': note_id}
+            dynamic_filter = {'user_id': user_id, 'archived': False, 'flag': True, 'id': note_id}
 
         notes_data = Note.objects.filter(**dynamic_filter).values('id', 'title', 'details', 'created_at', 'updated_at')
         if not notes_data:
